@@ -13,10 +13,14 @@ import { useTheme } from "@mui/material/styles";
 import { Gear } from "phosphor-react";
 import { Nav_Buttons, Profile_Menu } from "../../theme-data";
 import useSettings from "../../hooks/useSettings";
-// import { faker } from "@faker-js/faker";
+
 import AntSwitch from "../../components/AntSwitch";
 import Logo from "../../assets/Images/logo.ico";
 import { useNavigate } from "react-router-dom";
+import { useDispatch } from "../../redux/store";
+import { logOut } from "../../redux/slices/user";
+import { auth } from "../../config/firebase";
+import { useSelector } from "react-redux";
 
 const getPath = (index) => {
   switch (index) {
@@ -55,11 +59,18 @@ const getMenuPath = (index) => {
 };
 
 const SideBar = () => {
+  const dispatch = useDispatch();
+  const userData = useSelector((state) => state.userData.user);
   const [anchorEl, setAnchorEl] = React.useState(null);
   const open = Boolean(anchorEl);
-  const handleClick = (event) => {
+  const handleClick = (event, target) => {
     setAnchorEl(event.currentTarget);
-    navigate();
+    if (target == "Logout") {
+      auth.signOut();
+      dispatch(logOut());
+    } else {
+      navigate();
+    }
   };
   const handleClose = () => {
     setAnchorEl(null);
@@ -109,7 +120,7 @@ const SideBar = () => {
             {Nav_Buttons.map((el) =>
               el.index === selected ? (
                 <Box
-                  key={""}
+                  key={el.index + "_" + el.title}
                   sx={{
                     backgroundColor: theme.palette.primary.main,
                     borderRadius: 1.5,
@@ -124,6 +135,7 @@ const SideBar = () => {
                 </Box>
               ) : (
                 <IconButton
+                  key={el.index + "_" + el.title}
                   onClick={() => {
                     setSelected(el.index);
                     navigate(getPath(el.index));
@@ -135,7 +147,6 @@ const SideBar = () => {
                         ? "#000"
                         : theme.palette.text.primary,
                   }}
-                  key={el.index}
                 >
                   {el.icon}
                 </IconButton>
@@ -180,14 +191,15 @@ const SideBar = () => {
             }}
             defaultChecked
           />
+
           <Avatar
             id="basic-button"
             sx={{ cursor: "pointer" }}
-            src={""}
+            src={userData.photoURL}
             aria-controls={open ? "basic-menu" : undefined}
             aria-haspopup="true"
             aria-expanded={open ? "true" : undefined}
-            onClick={handleClick}
+            onClick={(e) => handleClick(e, "user")}
           />
           <Menu
             id="basic-menu"
@@ -202,13 +214,10 @@ const SideBar = () => {
           >
             <Stack spacing={1} px={1}>
               {Profile_Menu.map((el, idx) => (
-                <MenuItem
-                  onClick={() => {
-                    handleClick();
-                  }}
-                >
+                <MenuItem key={idx + "_" + el.title}>
                   <Stack
-                    onClick={() => {
+                    onClick={(e) => {
+                      handleClick(e, el.title);
                       navigate(getMenuPath(idx));
                     }}
                     sx={{ width: 100 }}

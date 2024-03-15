@@ -26,14 +26,17 @@ const Profile_Menu = [
 const Nav_Buttons = [
   {
     index: 0,
+    title: "ChatCircleDots",
     icon: <ChatCircleDots />,
   },
   {
     index: 1,
+    title: "Users",
     icon: <Users />,
   },
   {
     index: 2,
+    title: "Phone",
     icon: <Phone />,
   },
 ];

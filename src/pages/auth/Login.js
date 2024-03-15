@@ -1,6 +1,32 @@
 import { Link, Stack, Typography, Button } from "@mui/material";
+import { signInWithPopup } from "firebase/auth";
+import { Navigate } from "react-router-dom";
+import { auth, authProvider } from "../../config/firebase";
+import { useDispatch, useSelector } from "../../redux/store";
+import { loggedIn } from "../../redux/slices/user";
 
 const Login = () => {
+  const dispatch = useDispatch();
+  const isLoggedIn = useSelector((state) => state.userData.isLoggedIn);
+  const handleLogin = () => {
+    signInWithPopup(auth, authProvider)
+      .then((response) => {
+        let userData = {
+          email: response.user.email,
+          accessToken: response.user.accessToken,
+          displayName: response.user.displayName,
+          photoURL: response.user.photoURL,
+          uid: response.user.uid,
+        };
+
+        dispatch(loggedIn(userData));
+      })
+      .catch((err) => console.log(err.message));
+  };
+
+  if (isLoggedIn) {
+    return <Navigate to="/" />;
+  }
   return (
     <>
       <Stack
@@ -12,6 +38,7 @@ const Login = () => {
         {/* Login form */}
         <Button
           fullWidth
+          onClick={handleLogin}
           color="inherit"
           size="large"
           type="submit"
