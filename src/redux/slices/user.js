@@ -11,6 +11,12 @@ const initialState = {
     photoURL: "",
     uid: "",
   },
+  receiverData: {
+    displayName: "",
+    photoURL: "",
+    uid: "",
+    connectionId: "",
+  },
 };
 
 // create slice
@@ -21,12 +27,17 @@ const UserSlice = createSlice({
     //Toggle sidebar
     loggedIn: (state, action) => {
       state.isLoggedIn = true;
-      console.log(action.payload);
+
       state.user = action.payload;
+      state.receiverData = initialState.receiverData;
     },
     logOut: (state, action) => {
       state.isLoggedIn = false;
       state.user = initialState.user;
+      state.receiverData = initialState.receiverData;
+    },
+    setReceiverId: (state, action) => {
+      state.receiverData = action.payload;
     },
   },
 });
@@ -34,4 +45,4 @@ const UserSlice = createSlice({
 // export reducer
 export default UserSlice.reducer;
 
-export const { loggedIn, logOut } = UserSlice.actions;
+export const { loggedIn, logOut, setReceiverId } = UserSlice.actions;

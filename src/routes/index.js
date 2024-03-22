@@ -20,9 +20,9 @@ const Loadable = (Component) => (props) => {
 
 const LoginPage = Loadable(lazy(() => import("../pages/auth/Login")));
 
-// const GeneralApp = Loadable(
-//     lazy(() => import("../pages/dashboard/GeneralApp"))
-//   );
+const GeneralApp = Loadable(
+  lazy(() => import("../pages/dashboard/GeneralApp"))
+);
 
 //   const GroupPage = Loadable(lazy(() => import("../pages/dashboard/Group")));
 
@@ -50,7 +50,7 @@ export default function Router() {
       element: <DashboardLayout />,
       children: [
         // { element: <Navigate to={DEFAULT_PATH} replace />, index: true },
-        // { path: "app", element: <GeneralApp /> },
+        { path: "/", element: <GeneralApp /> },
         // { path: "settings", element: <Settings /> },
         // { path: "group", element: <GroupPage /> },
         // { path: "call", element: <CallPage /> },

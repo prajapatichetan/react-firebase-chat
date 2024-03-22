@@ -1,7 +1,8 @@
 import { Link, Stack, Typography, Button } from "@mui/material";
 import { signInWithPopup } from "firebase/auth";
 import { Navigate } from "react-router-dom";
-import { auth, authProvider } from "../../config/firebase";
+import { doc, setDoc } from "firebase/firestore";
+import { auth, authProvider, db } from "../../config/firebase";
 import { useDispatch, useSelector } from "../../redux/store";
 import { loggedIn } from "../../redux/slices/user";
 
@@ -18,7 +19,9 @@ const Login = () => {
           photoURL: response.user.photoURL,
           uid: response.user.uid,
         };
-
+        setDoc(doc(db, "users", userData.uid), {
+          ...userData,
+        });
         dispatch(loggedIn(userData));
       })
       .catch((err) => console.log(err.message));
