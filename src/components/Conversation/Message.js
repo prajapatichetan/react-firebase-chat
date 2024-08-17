@@ -4,76 +4,21 @@ import moment from "moment";
 
 // import { Chat_History } from "../../theme-data";
 import { Box, Stack, Divider, Typography } from "@mui/material";
-// import { DocMsg, LinkMsg, MediaMsg, ReplyMsg, TimeLine } from "./MsgTypes";
+import { DocMsg, MediaMsg, ReplyMsg, TextMsg, TimeLine } from "./MsgTypes";
 import { useSelector } from "../../redux/store";
-import { dateToFromNowDaily } from "../../utils/formatTime";
 
 // import { Message_options } from "../../theme-data";
 
-const TextMsg = forwardRef(({ msg, menu }, ref) => {
-  const { user } = useSelector((store) => store.userData);
-  const theme = useTheme();
-
-  return (
-    <Stack
-      direction="row"
-      justifyContent={msg.senderId != user.uid ? "start" : "end"}
-      ref={ref}
-    >
-      <Box
-        p={1.5}
-        sx={{
-          backgroundColor:
-            msg.senderId == user.uid
-              ? theme.palette.background.default
-              : theme.palette.primary.main,
-          borderRadius: 1.5,
-          width: "max-content",
-        }}
-      >
-        <Typography
-          variant="body2"
-          color={msg.senderId == user.uid ? theme.palette.text : "#fff"}
-        >
-          {msg.message}
-        </Typography>
-        <Stack direction="row" justifyContent={"end"}>
-          <Typography
-            color={msg.senderId == user.uid ? theme.palette.text : "#fff"}
-            sx={{ fontWeight: 200 }}
-            variant="caption"
-          >
-            {moment(msg?.timestamp?.toDate().getTime()).format("LT")}
-          </Typography>
-        </Stack>
-      </Box>
-      {/* {menu && <MessageOptions />} */}
-    </Stack>
-  );
-});
-
-const TimeLine = ({ date }) => {
-  const theme = useTheme();
-
-  return (
-    <Stack direction="row" alignItems="center" justifyContent="space-between">
-      <Divider width="46%" />
-      <Typography variant="caption" sx={{ color: theme.palette.text }}>
-        {dateToFromNowDaily(date)}
-      </Typography>
-      <Divider width="46%" />
-    </Stack>
-  );
-};
-
 const Message = ({ allMessages, menu }) => {
   const lastMessageDiv = useRef(null);
+  // window.addEventListener("scroll");
   useEffect(() => {
     scrollToBottom();
   }, [allMessages]);
   const scrollToBottom = () => {
-    lastMessageDiv.current.scrollIntoView({ behavior: "smooth" });
+    lastMessageDiv.current.scrollIntoView({ block: "end", behavior: "smooth" });
   };
+  const { user } = useSelector((store) => store.userData);
   return (
     <Box p={3}>
       <Stack spacing={3}>
@@ -86,7 +31,25 @@ const Message = ({ allMessages, menu }) => {
               <TimeLine date={date} />
 
               {allMessages[date].map((message) => {
-                return <TextMsg key={message.id} msg={message} menu={menu} />;
+                switch (message.type) {
+                  case "image":
+                    return (
+                      <MediaMsg key={message.id} msg={message} user={user} />
+                    );
+                  case "document":
+                    return (
+                      <DocMsg key={message.id} msg={message} user={user} />
+                    );
+                  default:
+                    return (
+                      <TextMsg
+                        key={message.id}
+                        msg={message}
+                        menu={menu}
+                        user={user}
+                      />
+                    );
+                }
               })}
             </>
           );
@@ -101,8 +64,7 @@ const Message = ({ allMessages, menu }) => {
               switch (el.subtype) {
                 case "img":
                   return <MediaMsg el={el} menu={menu} />;
-                case "doc":
-                  return <DocMsg el={el} menu={menu} />;
+                
 
                 case "link":
                   return <LinkMsg el={el} menu={menu} />;

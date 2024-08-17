@@ -17,6 +17,12 @@ const initialState = {
     uid: "",
     connectionId: "",
   },
+  selectedGroup: {
+    id: "",
+    groupName: "",
+    members: "",
+    admin: "",
+  },
 };
 
 // create slice
@@ -35,9 +41,15 @@ const UserSlice = createSlice({
       state.isLoggedIn = false;
       state.user = initialState.user;
       state.receiverData = initialState.receiverData;
+      state.selectedGroup = initialState.selectedGroup;
     },
     setReceiverId: (state, action) => {
+      state.selectedGroup = initialState.selectedGroup;
       state.receiverData = action.payload;
+    },
+    setGroup: (state, action) => {
+      state.receiverData = initialState.receiverData;
+      state.selectedGroup = action.payload;
     },
   },
 });
@@ -45,4 +57,4 @@ const UserSlice = createSlice({
 // export reducer
 export default UserSlice.reducer;
 
-export const { loggedIn, logOut, setReceiverId } = UserSlice.actions;
+export const { loggedIn, logOut, setReceiverId, setGroup } = UserSlice.actions;

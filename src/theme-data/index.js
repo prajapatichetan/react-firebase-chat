@@ -34,11 +34,11 @@ const Nav_Buttons = [
     title: "Users",
     icon: <Users />,
   },
-  {
-    index: 2,
-    title: "Phone",
-    icon: <Phone />,
-  },
+  // {
+  //   index: 2,
+  //   title: "Phone",
+  //   icon: <Phone />,
+  // },
 ];
 
 const Nav_Setting = [

@@ -31,13 +31,13 @@ export function dateToFromNowDaily(myDate) {
   // ensure the date is displayed with today and yesterday
   return moment(myDate).calendar(null, {
     // when the date is closer, specify custom values
-    lastWeek: "[Last] dddd",
+    lastWeek: "dddd",
     lastDay: "[Yesterday]",
     sameDay: "[Today]",
 
     // when the date is further away, use from-now functionality
     sameElse: function () {
-      return "[" + fromNow + "]";
+      return "[" + myDate + "]";
     },
   });
 }

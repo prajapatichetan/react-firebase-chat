@@ -10,6 +10,7 @@ import {
   Divider,
   Avatar,
   Badge,
+  CircularProgress,
 } from "@mui/material";
 import { ArchiveBox, CircleDashed, MagnifyingGlass } from "phosphor-react";
 import { useTheme } from "@mui/material/styles";
@@ -30,7 +31,7 @@ const Chats = () => {
   const theme = useTheme();
   const [users, setUsers] = useState([]);
   const userData = useSelector((state) => state.userData.user);
-
+  const [loader, setLoader] = useState(true);
   useEffect(() => {
     const unsub = onSnapshot(collection(db, "users"), (snapshot) => {
       setUsers(
@@ -38,10 +39,13 @@ const Chats = () => {
           .map((doc) => doc.data())
           .filter((item) => item.email != userData.email)
       );
+      setLoader(false);
     });
-    return unsub;
+    setTimeout(() => {}, 2000);
+
+    return setUsers([]);
   }, []);
-  const ChatList = [];
+
   return (
     <Box
       sx={{
@@ -90,7 +94,7 @@ const Chats = () => {
           className="scrollbar"
           spacing={2}
           direction="column"
-          sx={{ flexGrow: 1, overflow: "scroll", height: "100%" }}
+          sx={{ flexGrow: 1, overflowY: "scroll", height: "100%" }}
         >
           {/* <Stack spacing={2.4}>
             <Typography variant="subtitle2" sx={{ color: "#676767" }}>
@@ -105,9 +109,24 @@ const Chats = () => {
             <Typography variant="subtitle2" sx={{ color: "#676767" }}>
               All Chats
             </Typography>
-            {users.map((el) => {
-              return <ChatElement key={el.uid} {...el} />;
-            })}
+
+            {loader && (
+              <Stack
+                height={"100%"}
+                minHeight={"58vh"}
+                width={"auto"}
+                sx={{
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
+              >
+                <CircularProgress />{" "}
+              </Stack>
+            )}
+            {!loader &&
+              users.map((el) => {
+                return <ChatElement key={el.uid} {...el} />;
+              })}
           </Stack>
         </Stack>
       </Stack>

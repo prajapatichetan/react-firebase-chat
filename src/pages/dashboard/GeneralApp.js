@@ -4,14 +4,15 @@ import { useTheme } from "@mui/material/styles";
 import { useSelector } from "react-redux";
 import Chats from "./Chats";
 import Conversation from "../../components/Conversation";
-import Contact from "../../components/Contact";
 // import SharedMessages from "../../components/SharedMessages";
 // import StarredMessages from "../../components/StarredMessages";
 
 const GeneralApp = () => {
   const theme = useTheme();
+
   const { sidebar } = useSelector((store) => store.app); // access our store inside component
   const receiverData = useSelector((store) => store.userData.receiverData);
+
   return (
     <Stack direction="row" sx={{ width: "100%" }}>
       {/* Chats */}

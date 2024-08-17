@@ -18,6 +18,7 @@ const Login = () => {
           displayName: response.user.displayName,
           photoURL: response.user.photoURL,
           uid: response.user.uid,
+          status: "online",
         };
         setDoc(doc(db, "users", userData.uid), {
           ...userData,

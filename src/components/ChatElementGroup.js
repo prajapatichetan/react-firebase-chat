@@ -6,48 +6,23 @@ import { db } from "../config/firebase";
 import { collection, onSnapshot, addDoc } from "firebase/firestore";
 import { useDispatch, useSelector } from "../redux/store";
 
-import { setReceiverId } from "../redux/slices/user";
+import { setGroup } from "../redux/slices/user";
 
 //single chat element
-const ChatElement = ({
-  uid,
-  displayName,
-  photoURL,
-  msg,
-  time,
-  status,
-  unread,
-}) => {
+const ChatElementGroup = ({ id, groupName, members, admin }) => {
   const theme = useTheme();
   const dispatch = useDispatch();
   const loggedInUser = useSelector((state) => state.userData.user);
   // const [connectionId, setConnectionId] = useState(false);
 
-  const selectReceiver = async () => {
-    const unsub = onSnapshot(
-      collection(db, "chatUserConnection"),
-      (snapshot) => {
-        let connectionData = snapshot.docs
-          .map((doc) => ({ id: doc.id, ...doc.data() }))
-          .filter(
-            (item) =>
-              item.firstUserId == loggedInUser.uid ||
-              item.secondUserId == loggedInUser.uid
-          )
-          .filter(
-            (item) => item.firstUserId == uid || item.secondUserId == uid
-          );
-
-        dispatch(
-          setReceiverId({
-            uid,
-            displayName,
-            photoURL,
-            status,
-            connectionId: connectionData[0]?.id,
-          })
-        );
-      }
+  const selectGroup = async () => {
+    dispatch(
+      setGroup({
+        id,
+        groupName,
+        members,
+        admin,
+      })
     );
   };
 
@@ -64,25 +39,13 @@ const ChatElement = ({
       }}
       p={2}
       onClick={() => {
-        selectReceiver();
+        selectGroup();
       }}
     >
       <Stack direction="row" alignItems="center" justifyContent="space-between">
         <Stack direction="row" spacing={2}>
-          {status == "online" ? (
-            <StyledBadge
-              overlap="circular"
-              anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
-              variant="dot"
-            >
-              <Avatar src={photoURL} />
-            </StyledBadge>
-          ) : (
-            <Avatar src={photoURL} />
-          )}
-
           <Stack spacing={0.3}>
-            <Typography variant="subtitle2">{displayName}</Typography>
+            <Typography variant="subtitle2">{groupName}</Typography>
             {/* <Typography variant="caption">{msg} Message</Typography> */}
           </Stack>
         </Stack>
@@ -97,4 +60,4 @@ const ChatElement = ({
   );
 };
 
-export default ChatElement;
+export default ChatElementGroup;

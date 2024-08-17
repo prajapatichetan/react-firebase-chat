@@ -1,3 +1,6 @@
+import React, { forwardRef } from "react";
+import { useTheme } from "@mui/material/styles";
+import moment from "moment";
 import {
   Box,
   Divider,
@@ -8,21 +11,27 @@ import {
   Menu,
   MenuItem,
 } from "@mui/material";
-import { useTheme } from "@mui/material/styles";
+
 import { DotsThreeVertical, DownloadSimple, Image } from "phosphor-react";
-import React from "react";
+
+import { dateToFromNowDaily } from "../../utils/formatTime";
 import { Message_options } from "../../theme-data";
 
-const DocMsg = ({ el, menu }) => {
+const DocMsg = ({ msg, menu, user }) => {
   const theme = useTheme();
+
   return (
-    <Stack direction="row" justifyContent={el.incoming ? "start" : "end"}>
+    <Stack
+      direction="row"
+      justifyContent={msg.senderId != user.uid ? "start" : "end"}
+    >
       <Box
         p={1.5}
         sx={{
-          backgroundColor: el.incoming
-            ? theme.palette.background.default
-            : theme.palette.primary.main,
+          backgroundColor:
+            msg.senderId == user.uid
+              ? theme.palette.background.default
+              : theme.palette.primary.main,
           borderRadius: 1.5,
           width: "max-content",
         }}
@@ -39,16 +48,20 @@ const DocMsg = ({ el, menu }) => {
             }}
           >
             <Image size={48} />
-            <Typography variant="caption">Abstract.png</Typography>
-            <IconButton>
-              <DownloadSimple />
-            </IconButton>
+            <Typography variant="caption">{msg?.fileName}</Typography>
+            <a href={msg.link} target="_blank">
+              <IconButton>
+                <DownloadSimple />
+              </IconButton>
+            </a>
           </Stack>
           <Typography
             variant="body2"
-            sx={{ color: el.incoming ? theme.palette.text : "#fff" }}
+            sx={{
+              color: msg.senderId == user.uid ? theme.palette.text : "#fff",
+            }}
           >
-            {el.message}
+            {msg.message}
           </Typography>
         </Stack>
       </Box>
@@ -153,31 +166,36 @@ const ReplyMsg = ({ el, menu }) => {
   );
 };
 
-const MediaMsg = ({ el, menu }) => {
+const MediaMsg = ({ msg, menu, user }) => {
   const theme = useTheme();
+
   return (
-    <Stack direction="row" justifyContent={el.incoming ? "start" : "end"}>
+    <Stack
+      direction="row"
+      justifyContent={msg.senderId != user.uid ? "start" : "end"}
+    >
       <Box
         p={1.5}
         sx={{
-          backgroundColor: el.incoming
-            ? theme.palette.background.default
-            : theme.palette.primary.main,
+          backgroundColor:
+            msg.senderId == user.uid
+              ? theme.palette.background.default
+              : theme.palette.primary.main,
           borderRadius: 1.5,
           width: "max-content",
         }}
       >
         <Stack spacing={1}>
           <img
-            src={el.img}
-            alt={el.message}
+            src={msg.link}
+            alt={msg.message}
             style={{ maxHeight: 210, borderRadius: "10px" }}
           />
           <Typography
             variant="body2"
-            color={el.incoming ? theme.palette.text : "#fff"}
+            color={msg.senderId == user.uid ? theme.palette.text : "#fff"}
           >
-            {el.message}
+            {msg.message}
           </Typography>
         </Stack>
       </Box>
@@ -186,39 +204,54 @@ const MediaMsg = ({ el, menu }) => {
   );
 };
 
-const TextMsg = ({ el, menu }) => {
+const TextMsg = forwardRef(({ msg, menu, user }, ref) => {
   const theme = useTheme();
+
   return (
-    <Stack direction="row" justifyContent={el.incoming ? "start" : "end"}>
+    <Stack
+      direction="row"
+      justifyContent={msg.senderId != user.uid ? "start" : "end"}
+      ref={ref}
+    >
       <Box
         p={1.5}
         sx={{
-          backgroundColor: el.incoming
-            ? theme.palette.background.default
-            : theme.palette.primary.main,
+          backgroundColor:
+            msg.senderId == user.uid
+              ? theme.palette.background.default
+              : theme.palette.primary.main,
           borderRadius: 1.5,
           width: "max-content",
         }}
       >
         <Typography
           variant="body2"
-          color={el.incoming ? theme.palette.text : "#fff"}
+          color={msg.senderId == user.uid ? theme.palette.text : "#fff"}
         >
-          {el.message}
+          {msg.message}
         </Typography>
+        <Stack direction="row" justifyContent={"end"}>
+          <Typography
+            color={msg.senderId == user.uid ? theme.palette.text : "#fff"}
+            sx={{ fontWeight: 200 }}
+            variant="caption"
+          >
+            {moment(msg?.timestamp?.toDate().getTime()).format("LT")}
+          </Typography>
+        </Stack>
       </Box>
-      {menu && <MessageOptions />}
+      {/* {menu && <MessageOptions />} */}
     </Stack>
   );
-};
+});
 
-const TimeLine = ({ el }) => {
+const TimeLine = ({ date }) => {
   const theme = useTheme();
   return (
     <Stack direction="row" alignItems="center" justifyContent="space-between">
       <Divider width="46%" />
       <Typography variant="caption" sx={{ color: theme.palette.text }}>
-        {el.text}
+        {dateToFromNowDaily(date)}
       </Typography>
       <Divider width="46%" />
     </Stack>

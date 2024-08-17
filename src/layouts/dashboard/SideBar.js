@@ -10,6 +10,7 @@ import {
   Switch,
 } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
+import { doc, setDoc } from "firebase/firestore";
 import { Gear } from "phosphor-react";
 import { Nav_Buttons, Profile_Menu } from "../../theme-data";
 import useSettings from "../../hooks/useSettings";
@@ -18,14 +19,15 @@ import AntSwitch from "../../components/AntSwitch";
 import Logo from "../../assets/Images/logo.ico";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "../../redux/store";
+
 import { logOut } from "../../redux/slices/user";
-import { auth } from "../../config/firebase";
+import { auth, db } from "../../config/firebase";
 import { useSelector } from "react-redux";
 
 const getPath = (index) => {
   switch (index) {
     case 0:
-      return "/app";
+      return "/";
 
     case 1:
       return "/group";
@@ -67,6 +69,10 @@ const SideBar = () => {
     setAnchorEl(event.currentTarget);
     if (target == "Logout") {
       auth.signOut();
+      setDoc(doc(db, "users", userData.uid), {
+        ...userData,
+        status: "offline",
+      });
       dispatch(logOut());
     } else {
       navigate();
@@ -81,6 +87,8 @@ const SideBar = () => {
   // state for selected button
   const [selected, setSelected] = useState(0); // by default 0 index button is selected
   //switch themes
+  const currentLocation = window.location.pathname;
+
   const { onToggleMode } = useSettings();
   return (
     <Box
@@ -118,7 +126,7 @@ const SideBar = () => {
             spacing={3}
           >
             {Nav_Buttons.map((el) =>
-              el.index === selected ? (
+              getPath(el.index) == currentLocation ? (
                 <Box
                   key={el.index + "_" + el.title}
                   sx={{
@@ -153,7 +161,7 @@ const SideBar = () => {
               )
             )}
             <Divider sx={{ width: "48px" }} />
-            {selected === 3 ? (
+            {/* {selected === 3 ? (
               <Box
                 sx={{
                   backgroundColor: theme.palette.primary.main,
@@ -180,7 +188,7 @@ const SideBar = () => {
               >
                 <Gear />
               </IconButton>
-            )}
+            )} */}
           </Stack>
         </Stack>
 
